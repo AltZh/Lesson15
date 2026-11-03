@@ -1,18 +1,14 @@
 /* index.css - Neon Fantasy Theme */
 :root {
-    /* --bg-color: #0b0c10; */
-    --bg-color: #111;
-    --card-bg: #1f2833;
-    --card-header-bg: #151a21;
-    --accent-red: #ff2a6d;
-    --accent-blue: #05d9e8;
-    --accent-yellow: #ffb703;
-    --accent-green: #00f5d4;
-    --accent-purple: #7b2cbf;
-    --text-color: #edf2f4;
-    --text-muted: #a0aab2;
-    --border-color: #354259;
-    --glow-color: rgba(5, 217, 232, 0.2);
+    /* --bg-color: #121214; */
+    --bg-color: #222;
+    --card-bg: #1e1e24;
+    --accent-red: #e63946;
+    --accent-blue: #457b9d;
+    --accent-yellow: #f4a261;
+    --accent-green: #2a9d8f;
+    --text-color: #f1faee;
+    --border-color: #2b2d42;
 }
 
 * {
