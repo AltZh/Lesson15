@@ -20,11 +20,18 @@ const gameState = {
     inBattle: false
 };
 
-// Список возможных врагов
+// Расширенный список врагов с разными типами и иконками FontAwesome
 const enemyTemplates = [
-    { name: "Дикий Гоблин", hp: 40, maxHp: 40, atk: 8, def: 2, exp: 35, gold: 15, icon: "fa-ghost" },
-    { name: "Лесной Волколак", hp: 60, maxHp: 60, atk: 12, def: 3, exp: 50, gold: 25, icon: "fa-dog" },
-    { name: "Пещерный Огр", hp: 100, maxHp: 100, atk: 18, def: 6, exp: 90, gold: 50, icon: "fa-skull" }
+    { name: "Пещерная Крыса", hp: 25, maxHp: 25, atk: 6, def: 1, exp: 20, gold: 8, icon: "fa-rat", type: "beast" },
+    { name: "Дикий Гоблин", hp: 40, maxHp: 40, atk: 9, def: 2, exp: 35, gold: 15, icon: "fa-ghost", type: "humanoid" },
+    { name: "Лесной Волколак", hp: 60, maxHp: 60, atk: 13, def: 3, exp: 55, gold: 25, icon: "fa-dog", type: "beast" },
+    { name: "Скелет-Воин", hp: 70, maxHp: 70, atk: 15, def: 5, exp: 70, gold: 35, icon: "fa-skull-crossbones", type: "undead" },
+    { name: "Разбойник", hp: 85, maxHp: 85, atk: 18, def: 4, exp: 90, gold: 60, icon: "fa-user-ninja", type: "humanoid" },
+    { name: "Пещерный Огр", hp: 120, maxHp: 120, atk: 22, def: 6, exp: 130, gold: 80, icon: "fa-skull", type: "monster" },
+    { name: "Болотная Ведьма", hp: 90, maxHp: 90, atk: 25, def: 3, exp: 140, gold: 95, icon: "fa-hat-wizard", type: "magic" },
+    { name: "Бронированный Тролль", hp: 160, maxHp: 160, atk: 28, def: 10, exp: 200, gold: 140, icon: "fa-mountain", type: "monster" },
+    { name: "Злобный Демон", hp: 220, maxHp: 220, atk: 35, def: 12, exp: 300, gold: 220, icon: "fa-fire", type: "demon" },
+    { name: "Древний Дракон", hp: 350, maxHp: 350, atk: 48, def: 18, exp: 500, gold: 400, icon: "fa-dragon", type: "boss" }
 ];
 
 // DOM элементы
@@ -60,9 +67,9 @@ const elements = {
 };
 
 // Функция добавления записей в лог
-function addLog(text) {
+function addLog(text, colorClass = '') {
     const p = document.createElement('p');
-    p.className = 'log-entry';
+    p.className = `log-entry ${colorClass}`;
     p.textContent = text;
     elements.logContent.appendChild(p);
     elements.logContent.scrollTop = elements.logContent.scrollHeight;
@@ -110,15 +117,19 @@ function updateUI() {
     }
 }
 
-// Поиск нового врага
+// Поиск нового врага (фильтруем по силе в зависимости от уровня игрока, но иногда может выпасть сильный)
 function explore() {
     if (gameState.inBattle) return;
 
-    const randomIndex = Math.floor(Math.random() * enemyTemplates.length);
+    // Определяем максимальный доступный индекс врага по уровню игрока
+    const maxAvailableIndex = Math.min(enemyTemplates.length - 1, Math.floor((gameState.hero.level - 1) / 1.5) + 2);
+    const minAvailableIndex = Math.max(0, maxAvailableIndex - 4);
+    
+    const randomIndex = Math.floor(Math.random() * (maxAvailableIndex - minAvailableIndex + 1)) + minAvailableIndex;
     const template = enemyTemplates[randomIndex];
     
-    // Создаем копию врага с масштабированием под уровень игрока
-    const scale = 1 + (gameState.hero.level - 1) * 0.2;
+    // Масштабирование характеристик
+    const scale = 1 + (gameState.hero.level - 1) * 0.15;
     gameState.enemy = {
         name: template.name,
         hp: Math.round(template.hp * scale),
@@ -127,11 +138,12 @@ function explore() {
         def: Math.round(template.def * scale),
         exp: Math.round(template.exp * scale),
         gold: Math.round(template.gold * scale),
-        icon: template.icon
+        icon: template.icon,
+        type: template.type
     };
 
     gameState.inBattle = true;
-    addLog(`Вы наткнулись на: ${gameState.enemy.name}!`);
+    addLog(`Вы наткнулись на: ${gameState.enemy.name}! (Урон: ${gameState.enemy.atk})`, 'yellow');
     updateUI();
 }
 
@@ -139,12 +151,21 @@ function explore() {
 function enemyTurn() {
     if (!gameState.enemy || gameState.enemy.hp <= 0) return;
 
-    const damage = Math.max(1, gameState.enemy.atk - gameState.hero.def);
+    // Шанс нанести критический удар у сильных врагов (демоны, драконы, боссы)
+    let isCrit = Math.random() < 0.15 && (gameState.enemy.type === 'demon' || gameState.enemy.type === 'boss');
+    let damageMultiplier = isCrit ? 1.5 : 1;
+    
+    const damage = Math.max(1, Math.round((gameState.enemy.atk * damageMultiplier) - gameState.hero.def));
     gameState.hero.hp = Math.max(0, gameState.hero.hp - damage);
-    addLog(`${gameState.enemy.name} атакует вас на ${damage} урона!`);
+
+    if (isCrit) {
+        addLog(`⚡ Критический удар! ${gameState.enemy.name} наносит вам аж ${damage} урона!`, 'red');
+    } else {
+        addLog(`${gameState.enemy.name} атакует вас на ${damage} урона.`);
+    }
 
     if (gameState.hero.hp <= 0) {
-        addLog("Вы потерпели поражение! Золото и опыт потеряны.");
+        addLog("Вы потерпели поражение! Половина золота утеряна.", 'red');
         gameState.hero.hp = gameState.hero.maxHp;
         gameState.hero.mana = gameState.hero.maxMana;
         gameState.hero.gold = Math.floor(gameState.hero.gold / 2);
@@ -177,7 +198,7 @@ function castSpell() {
     gameState.hero.mana -= 15;
     const damage = gameState.hero.atk * 2; // Магия игнорирует броню
     gameState.enemy.hp -= damage;
-    addLog(`Вы применили огненный шар и нанесли ${damage} урона!`);
+    addLog(`Вы применили огненный шар и нанесли ${damage} магиеского урона!`, 'blue');
 
     if (gameState.enemy.hp <= 0) {
         winBattle();
@@ -194,7 +215,7 @@ function usePotion() {
     gameState.hero.potions--;
     const healAmount = 50;
     gameState.hero.hp = Math.min(gameState.hero.maxHp, gameState.hero.hp + healAmount);
-    addLog(`Вы выпили зелье и восстановили ${healAmount} HP.`);
+    addLog(`Вы выпили зелье и восстановили ${healAmount} HP.`, 'green');
 
     if (gameState.inBattle) {
         enemyTurn();
@@ -204,7 +225,7 @@ function usePotion() {
 
 // Победа в бою
 function winBattle() {
-    addLog(`Победа! Получено: ${gameState.enemy.gold} золота и ${gameState.enemy.exp} опыта.`);
+    addLog(`Победа! Получено: ${gameState.enemy.gold} золота и ${gameState.enemy.exp} опыта.`, 'green');
     gameState.hero.gold += gameState.enemy.gold;
     addExp(gameState.enemy.exp);
     gameState.inBattle = false;
@@ -220,13 +241,13 @@ function addExp(amount) {
         h.exp -= h.maxExp;
         h.level++;
         h.maxExp = Math.round(h.maxExp * 1.5);
-        h.maxHp += 20;
+        h.maxHp += 25;
         h.hp = h.maxHp;
-        h.maxMana += 10;
+        h.maxMana += 15;
         h.mana = h.maxMana;
-        h.atk += 3;
+        h.atk += 4;
         h.def += 2;
-        addLog(`Уровень повышен! Теперь вы ${h.level} уровня.`);
+        addLog(`🎉 Уровень повышен! Теперь вы ${h.level} уровня! Все характеристики выросли.`, 'yellow');
     }
 }
 
@@ -242,11 +263,11 @@ function buyItem(item, price) {
         gameState.hero.potions++;
         addLog("Вы купили Зелье Лечения.");
     } else if (item === 'sword') {
-        gameState.hero.atk += 5;
-        addLog("Вы купили Стальной Меч (+5 к Атаке).");
+        gameState.hero.atk += 6;
+        addLog("Вы купили Стальной Меч (+6 к Атаке).");
     } else if (item === 'armor') {
-        gameState.hero.def += 3;
-        addLog("Вы купили Кожаную Броню (+3 к Защите).");
+        gameState.hero.def += 4;
+        addLog("Вы купили Кожаную Броню (+4 к Защите).");
     }
     updateUI();
 }
