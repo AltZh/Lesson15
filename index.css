@@ -1,6 +1,7 @@
 /* index.css */
 :root {
-    --bg-color: #121214;
+    /* --bg-color: #121214; */
+    --bg-color: #222;
     --card-bg: #1e1e24;
     --accent-red: #e63946;
     --accent-blue: #457b9d;
