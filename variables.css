@@ -1,0 +1,12 @@
+/* index.css - Neon Fantasy Theme */
+:root {
+    /* --bg-color: #121214; */
+    --bg-color: #111;
+    --card-bg: #1e1e24;
+    --accent-red: #e63946;
+    --accent-blue: #457b9d;
+    --accent-yellow: #f4a261;
+    --accent-green: #2a9d8f;
+    --text-color: #f1faee;
+    --border-color: #2b2d42;
+}
