@@ -1,0 +1,120 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Mini Game</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Шапка: Профиль героя -->
+        <header class="hero-header">
+            <div class="hero-info">
+                <h1 id="hero-name">Рыцарь</h1>
+                <div class="level-badge">Уровень <span id="hero-level">1</span></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label"><i class="fa-solid fa-heart red"></i> Здоровье</span>
+                    <div class="bar-container">
+                        <div id="hp-bar" class="bar hp" style="width: 100%;"></div>
+                        <span id="hp-text" class="bar-text">100 / 100</span>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <span class="stat-label"><i class="fa-solid fa-flask blue"></i> Мана</span>
+                    <div class="bar-container">
+                        <div id="mana-bar" class="bar mana" style="width: 100%;"></div>
+                        <span id="mana-text" class="bar-text">50 / 50</span>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <span class="stat-label"><i class="fa-solid fa-star yellow"></i> Опыт</span>
+                    <div class="bar-container">
+                        <div id="exp-bar" class="bar exp" style="width: 0%;"></div>
+                        <span id="exp-text" class="bar-text">0 / 100</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="secondary-stats">
+                <div><i class="fa-solid fa-hand-fist"></i> Атака: <span id="hero-atk">15</span></div>
+                <div><i class="fa-solid fa-shield-halved"></i> Защита: <span id="hero-def">5</span></div>
+                <div><i class="fa-solid fa-coins gold"></i> Золото: <span id="hero-gold">0</span></div>
+            </div>
+        </header>
+
+        <!-- Главный экран -->
+        <main class="main-content">
+            <!-- Экран Боя / Исследования -->
+            <section id="battle-screen" class="screen active">
+                <div class="enemy-card" id="enemy-card">
+                    <div class="enemy-icon" id="enemy-icon"><i class="fa-solid fa-ghost"></i></div>
+                    <h2 id="enemy-name">Дикий Гоблин</h2>
+                    <div class="bar-container">
+                        <div id="enemy-hp-bar" class="bar hp" style="width: 100%;"></div>
+                        <span id="enemy-hp-text" class="bar-text">40 / 40</span>
+                    </div>
+                </div>
+
+                <div class="actions-grid">
+                    <button id="btn-attack" class="btn btn-attack"><i class="fa-solid fa-sword"></i> Атака</button>
+                    <button id="btn-spell" class="btn btn-spell"><i class="fa-solid fa-wand-magic-sparkles"></i> Магия (15 MP)</button>
+                    <button id="btn-heal" class="btn btn-heal"><i class="fa-solid fa-prescription-bottle-medical"></i> Зелье HP (<span id="potion-count">2</span>)</button>
+                    <button id="btn-explore" class="btn btn-explore"><i class="fa-solid fa-compass"></i> Исследовать</button>
+                </div>
+            </section>
+
+            <!-- Магазин -->
+            <section id="shop-screen" class="screen">
+                <h2><i class="fa-solid fa-store"></i> Лавка Кузнеца</h2>
+                <div class="shop-grid">
+                    <div class="shop-item">
+                        <div>
+                            <strong>Зелье Лечения</strong>
+                            <p>Восстанавливает 50 HP</p>
+                        </div>
+                        <button class="btn btn-buy" data-item="potion" data-price="20">20 Gold</button>
+                    </div>
+                    <div class="shop-item">
+                        <div>
+                            <strong>Стальной Меч</strong>
+                            <p>+5 к Атаке</p>
+                        </div>
+                        <button class="btn btn-buy" data-item="sword" data-price="50">50 Gold</button>
+                    </div>
+                    <div class="shop-item">
+                        <div>
+                            <strong>Кожаная Броня</strong>
+                            <p>+3 к Защите</p>
+                        </div>
+                        <button class="btn btn-buy" data-item="armor" data-price="45">45 Gold</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Навигация -->
+        <nav class="nav-bar">
+            <button id="nav-battle" class="nav-btn active"><i class="fa-solid fa-dungeon"></i> Битва</button>
+            <button id="nav-shop" class="nav-btn"><i class="fa-solid fa-cart-shopping"></i> Магазин</button>
+        </nav>
+
+        <!-- Лог событий -->
+        <footer class="game-log">
+            <h3><i class="fa-solid fa-scroll"></i> Журнал событий</h3>
+            <div id="log-content" class="log-content">
+                <p class="log-entry">Добро пожаловать в игру! Нажмите "Исследовать", чтобы найти врагов.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
